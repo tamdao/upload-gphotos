@@ -1,0 +1,57 @@
+{
+  "coverage": "76.27%",
+  "expectCount": 59,
+  "actualCount": 45,
+  "files": {
+    "src/Album.js": {
+      "expectCount": 12,
+      "actualCount": 11,
+      "undocumentLines": [
+        3
+      ]
+    },
+    "src/cli.js": {
+      "expectCount": 2,
+      "actualCount": 0,
+      "undocumentLines": [
+        25,
+        44
+      ]
+    },
+    "src/index.js": {
+      "expectCount": 24,
+      "actualCount": 16,
+      "undocumentLines": [
+        19,
+        109,
+        128,
+        132,
+        306,
+        320,
+        335,
+        357
+      ]
+    },
+    "src/Photo.js": {
+      "expectCount": 19,
+      "actualCount": 18,
+      "undocumentLines": [
+        1
+      ]
+    },
+    "src/utils/read.js": {
+      "expectCount": 1,
+      "actualCount": 0,
+      "undocumentLines": [
+        3
+      ]
+    },
+    "src/utils/request-json-template-generator.js": {
+      "expectCount": 1,
+      "actualCount": 0,
+      "undocumentLines": [
+        1
+      ]
+    }
+  }
+}

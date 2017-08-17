@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../">
+  <title data-ice="title">src/index.js | upload-gphotos | ESDoc</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  <script src="script/manual.js"></script>
+<meta name="description" content="Upload to Google Photos"><meta property="twitter:card" content="summary"><meta property="twitter:title" content="upload-gphotos | ESDoc"><meta property="twitter:description" content="Upload to Google Photos"></head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+<a style="position:relative; top:3px;" href="https://github.com/3846masa/upload-gphotos"><img width="20px" src="./image/github.png"></a></header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Album.js~GPhotosAlbum.html">GPhotosAlbum</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Photo.js~GPhotosPhoto.html">GPhotosPhoto</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/index.js~GPhotos.html">GPhotos</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-external">E</span><span data-ice="name"><span><a href="https://github.com/nomiddlename/log4js-node">log4js.Logger</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-external">E</span><span data-ice="name"><span><a href="https://github.com/winstonjs/winston">winston.Logger</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#utils">utils</a><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-read">read</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-requestjsontemplategenerator">requestjsontemplategenerator</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/index.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">import packageInfo from &apos;../package.json&apos;;
+import reqJSONTemplateGenerator from &apos;./utils/request-json-template-generator&apos;;
+
+// import winston, { Logger } from &apos;winston&apos;;
+// import log4js from &apos;log4js&apos;;
+import request from &apos;request-promise&apos;;
+import fs from &apos;fs-promise&apos;;
+import ProgressBar from &apos;progress&apos;;
+import path from &apos;path&apos;;
+import colors from &apos;colors/safe&apos;;
+import qs from &apos;querystring&apos;;
+import cheerio from &apos;cheerio&apos;;
+import { JSDOM, VirtualConsole } from &apos;jsdom&apos;;
+import JSON from &apos;./utils/json-async&apos;;
+
+import Album from &apos;./Album&apos;;
+import Photo from &apos;./Photo&apos;;
+
+class GPhotos {
+  /**
+   * @external {winston.Logger} https://github.com/winstonjs/winston
+   */
+  /**
+   * @external {log4js.Logger} https://github.com/nomiddlename/log4js-node
+   */
+  /**
+   * @example
+   * const gphotos = new GPhotos({
+   *   username: &apos;username@gmail.com&apos;,
+   *   password: &apos;YOUR_PASSWORD&apos;,
+   *   options: {
+   *     progressbar: true,
+   *     logger: new wiston.Logger();
+   *   }
+   * });
+   * @param  {Object} params
+   * @param  {String} params.username
+   * @param  {String} params.password
+   * @param  {Object} [params.options]
+   * @param  {boolean} [params.options.progressbar]
+   * @param  {winston.Logger|log4js.Logger|console} [params.options.logger]
+   */
+  constructor ({ username, password, options }) {
+    /** @type {String} */
+    this.username = username;
+    /** @type {String} */
+    this.password = password;
+    /** @type {Object} */
+    this.options = options || {};
+
+    const cookieJar = request.jar();
+    Object.defineProperties(this, {
+      &apos;_cookieJar&apos;: {
+        value: cookieJar
+      },
+      &apos;_request&apos;: {
+        value: request.defaults({
+          simple: false,
+          resolveWithFullResponse: true,
+          headers: {
+            &apos;User-Agent&apos;: `Mozilla/5.0 UploadGPhotos/${ packageInfo.version }`
+          },
+          jar: cookieJar
+        })
+      },
+      &apos;_logger&apos;: {
+        value: this.options.logger || console
+      },
+      &apos;_gphotos&apos;: {
+        value: this
+      }
+    });
+  }
+
+  /**
+   * @example
+   * gphotos.login()
+   *   .then((gphotos) =&gt; {
+   *     // do something
+   *   })
+   *   .catch((err) =&gt; {
+   *     console.error(err.stack);
+   *   });
+   * @return {Promise&lt;GPhotos,Error&gt;}
+   */
+  async login () {
+    const loginUrl = &apos;https://accounts.google.com/ServiceLoginAuth&apos;;
+    const { body: loginHTML } = await this._request.get(loginUrl);
+
+    const loginData = Object.assign(
+      qs.parse(cheerio.load(loginHTML)(&apos;form&apos;).serialize()),
+      {
+        Email: this.username,
+        Passwd: this.password
+      }
+    );
+
+    const loginRes = await this._request.post(loginUrl, { form: loginData });
+
+    if (loginRes.statusCode !== 302) {
+      this._logger.error(&apos;Failed to login...&apos;);
+      return Promise.reject(new Error(&apos;Failed to login&apos;));
+    }
+
+    const params = await this._fetchGPhotosParams();
+    if (!params.S06Grb) {
+      return Promise.reject(new Error(&apos;Can\&apos;t fetch userId.&apos;));
+    }
+    this._userId = params.S06Grb;
+
+    this._logger.info(&apos;Success to login!&apos;);
+    this._logger.info(`UserID is ${ this._userId }.`);
+
+    await this.fetchAtParam();
+
+    return this;
+  }
+
+  /**
+   * @return {Promise&lt;undefined,Error&gt;}
+   */
+  async fetchAtParam () {
+    const params = await this._fetchGPhotosParams();
+    if (!params.SNlM0e) {
+      return Promise.reject(new Error(&apos;Can\&apos;t fetch &quot;at&quot; param.&apos;));
+    }
+
+    this._atParam = params.SNlM0e;
+    this._logger.info(`atParam is ${ this._atParam }.`);
+  }
+
+  async _fetchGPhotosParams () {
+    const gPhotosTopPageRes = await this._request.get(&apos;https://photos.google.com&apos;);
+    if (gPhotosTopPageRes.statusCode !== 200) {
+      this._logger.error(&apos;Can\&apos;t access to Google Photos&apos;);
+      return Promise.reject(new Error(&apos;Can\&apos;t access to Google Photos&apos;));
+    }
+
+    const window = new JSDOM(gPhotosTopPageRes.body, {
+      virtualConsole: new VirtualConsole(),
+      runScripts: &apos;dangerously&apos;,
+    }).window;
+    if (window.WIZ_global_data &amp;&amp; window.WIZ_global_data.SNlM0e) {
+      const params = window.WIZ_global_data;
+      window.close();
+      return params;
+    } else {
+      return Promise.reject(new Error(&apos;Can\&apos;t fetch GPhotos params.&apos;));
+    }
+  }
+
+  /**
+   * @param  {String} albumName
+   * @return {Promise&lt;GPhotosAlbum,Error&gt;}
+   */
+  async searchAlbum (albumName) {
+    albumName = albumName.toString();
+
+    let albumInfo = null;
+    let cursor = null;
+    const checkFilter = (info) =&gt; {
+      return info.title === albumName ||
+        info.id === albumName;
+    };
+
+    do {
+      const { list: albumList, next: nextCursor } =
+        await this.fetchAlbumList(cursor);
+
+      albumInfo = albumList.filter(checkFilter).shift();
+      cursor = nextCursor;
+    } while (!albumInfo &amp;&amp; cursor);
+
+    if (!albumInfo) {
+      this._logger.error(`Album &quot;${ albumName }&quot; is not found.`);
+      return null;
+    }
+    return albumInfo;
+  }
+
+  /**
+   * @return {Promise&lt;GPhotosAlbum[],Error&gt;}
+   */
+  async fetchAllAlbumList () {
+    const albumList = [];
+
+    let cursor = null;
+    do {
+      const { list, next: nextCursor } = await this.fetchAlbumList(cursor);
+      albumList.push(...list);
+      cursor = nextCursor;
+    } while (cursor);
+
+    return albumList;
+  }
+
+  /**
+   * @param  {?String} [next=null]
+   * @return {Promise&lt;Object,Error&gt;}
+   * @property {GPhotosAlbum[]} list
+   * @property {String|undefined} next
+   */
+  async fetchAlbumList (next = null) {
+    const query = [ (next || null), null, null, null, 1 ];
+    const results =
+      await this._sendDataQuery(72930366, query)
+        .catch((_err) =&gt; {
+          this._logger.error(`Failed to fetch albums. ${_err.message}`);
+          return Promise.reject(_err);
+        });
+
+    if (!results[0]) {
+      return { list: [], next: undefined };
+    }
+
+    const albumList = results[0].map((al) =&gt; {
+      const info = al.pop()[&apos;72930366&apos;];
+      return new Album({
+        id: al.shift(),
+        title: info[1],
+        period: {
+          from: new Date(info[2][0]),
+          to: new Date(info[2][1])
+        },
+        items_count: info[3],
+        _gphotos: this._gphotos
+      });
+    });
+
+    return { list: albumList, next: results[1] };
+  }
+
+  /**
+   * @param  {String} albumName
+   * @return {Promise&lt;GPhotosAlbum,Error&gt;}
+   */
+  async createAlbum (albumName) {
+    const latestPhoto = await this._fetchLatestPhoto();
+    const query = [ [ latestPhoto.id ], null, albumName.toString() ];
+
+    const results =
+      await this._sendMutateQuery(79956622, query)
+        .catch((_err) =&gt; {
+          this._logger.error(`Failed to create album. ${_err.message}`);
+          return Promise.reject(_err);
+        });
+
+    const [ albumId, [ insertedPhotoId ] ] = results;
+
+    await new Photo({ id: insertedPhotoId, _gphotos: this._gphotos }).removeFromAlbum();
+
+    this._logger.info(`AlbumID is ${ albumId }.`);
+
+    const album = await this.searchAlbum(albumId);
+    return album;
+  }
+
+  /**
+   * @param {String} id
+   * @return {Promise&lt;GPhotosPhoto,Error&gt;}
+   */
+  async fetchPhotoById (id) {
+    const photo = new Photo({ id: id, _gphotos: this });
+    return await photo.fetchInfo();
+  }
+
+  /**
+   * @return {Promise&lt;GPhotosPhoto[],Error&gt;}
+   */
+  async fetchAllPhotoList () {
+    const photoList = [];
+
+    let cursor = null;
+    do {
+      const { list, next: nextCursor } = await this.fetchPhotoList(cursor);
+      photoList.push(...list);
+      cursor = nextCursor;
+    } while (cursor);
+
+    return photoList;
+  }
+
+  /**
+   * @param  {?String} [next=null]
+   * @return {Promise&lt;Object,Error&gt;}
+   * @property {GPhotosPhoto[]} list
+   * @property {String|undefined} next
+   */
+  async fetchPhotoList (next = null) {
+    const query = [ (next || null), null, null, null, 1 ];
+    const results =
+      await this._sendDataQuery(74806772, query)
+        .catch((_err) =&gt; {
+          this._logger.error(`Failed to fetch photos. ${_err.message}`);
+          return Promise.reject(_err);
+        });
+
+    const photoList = results[0].map((info) =&gt; {
+      const data = Object.assign(Photo.parseInfo(info), { _gphotos: this._gphotos });
+      return new Photo(data);
+    });
+
+    return { list: photoList, next: results[1] };
+  }
+
+  async _fetchLatestPhoto () {
+    const latestPhotoList = await this.fetchPhotoList();
+    return latestPhotoList.list[0];
+  }
+
+  /**
+   * @param  {String} albumName
+   * @return {Promise&lt;GPhotosAlbum,Error&gt;}
+   */
+  async searchOrCreateAlbum (albumName) {
+    return this.searchAlbum(albumName)
+      .then((album) =&gt; album || this.createAlbum(albumName));
+  }
+
+  async _sendDataQuery (queryNum, query) {
+    const reqQuery = [[
+      [ parseInt(queryNum, 10), [{
+        [String(queryNum)]: query
+      }], null, null, 0]
+    ]];
+
+    const url = &apos;https://photos.google.com/_/PhotosUi/data&apos;;
+    const body = await this._sendQuery(url, reqQuery);
+
+    const results =
+      (await JSON.parseAsync(body.substr(4)))[0][2][String(queryNum)];
+    return results;
+  }
+
+  async _sendMutateQuery (queryNum, query, ignoreResult = false) {
+    const reqQuery = [
+      &apos;af.maf&apos;,
+      [[
+        &apos;af.add&apos;,
+        parseInt(queryNum, 10),
+        [{
+          [String(queryNum)]: query
+        }]
+      ]]
+    ];
+
+    const url = &apos;https://photos.google.com/_/PhotosUi/mutate&apos;;
+    const body = await this._sendQuery(url, reqQuery);
+
+    if (ignoreResult) return true;
+
+    const results =
+      (await JSON.parseAsync(body.substr(4)))[0][1][String(queryNum)];
+    return results;
+  }
+
+  async _sendQuery (url, query) {
+    const queryRes = await this._request({
+      method: &apos;POST&apos;,
+      url: url,
+      form: {
+        &apos;f.req&apos;: JSON.stringify(query),
+        at: this._atParam
+      }
+    });
+
+    if (queryRes.statusCode !== 200) {
+      return Promise.reject(new Error(`${queryRes.statusMessage}`));
+    }
+
+    return queryRes.body;
+  }
+
+  /**
+   * @param  {String} filePath
+   * @param  {?String} [fileName]
+   * @return {Promise&lt;GPhotosPhoto,Error&gt;}
+   */
+  async upload (filePath, fileName) {
+    fileName = fileName || path.basename(filePath);
+    const fileStat =
+      await fs.stat(filePath)
+        .catch((err) =&gt; {
+          this._logger.error(`&quot;${ fileName }&quot; can&apos;t access.`);
+          return Promise.reject(err);
+        });
+    const fileReadStream = fs.createReadStream(filePath);
+    return await this.uploadFromStream(fileReadStream, fileStat.size, fileName);
+  }
+
+  /**
+   * @param {stream.Readable} stream
+   * @param {number} size
+   * @param {?String} [fileName]
+   * @return {Promise&lt;GPhotosPhoto,Error&gt;}
+   */
+  async uploadFromStream (stream, size, fileName) {
+    stream.pause();
+
+    if (!size || typeof size !== &apos;number&apos;) {
+      throw new Error(&apos;Invalid arguments.&apos;);
+    }
+
+    const sendInfo = reqJSONTemplateGenerator();
+    for (let field of sendInfo.createSessionRequest.fields) {
+      if (&apos;external&apos; in field) {
+        field.external.filename = fileName || Date.now().toString(10);
+        field.external.size = size;
+      } else if (&apos;inlined&apos; in field) {
+        const name = field.inlined.name;
+        if (name !== &apos;effective_id&apos; &amp;&amp; name !== &apos;owner_name&apos;) continue;
+        field.inlined.content = this._userId;
+      }
+    }
+
+    const serverStatusRes = await this._request({
+      method: &apos;POST&apos;,
+      url: &apos;https://photos.google.com/_/upload/photos/resumable?authuser=0&apos;,
+      body: JSON.stringify(sendInfo),
+      headers: {
+        &apos;Content-Type&apos;: &apos;application/x-www-form-urlencoded;charset=UTF-8&apos;
+      }
+    });
+
+    if (serverStatusRes.statusCode !== 200) {
+      this._logger.error(`Server Error: ${ serverStatusRes.statusCode }`);
+      return Promise.reject(new Error(`Server Error: ${ serverStatusRes.statusCode }`));
+    }
+
+    const serverStatus = JSON.parse(serverStatusRes.body);
+    if (!(&apos;sessionStatus&apos; in serverStatus)) {
+      this._logger.error(&apos;Server Error: sessionStatus is not found.&apos;);
+      return Promise.reject(new Error(&apos;Server Error: sessionStatus is not found.&apos;));
+    }
+
+    const sendUrl =
+      serverStatus.sessionStatus.externalFieldTransfers[0].putInfo.url;
+
+    if (this.options.progressbar) {
+      const progressBar = new ProgressBar(colors.green(&apos;Uploading&apos;) + &apos; [:bar] :percent :etas&apos;, {
+        complete: &apos;=&apos;,
+        incomplete: &apos;\x20&apos;,
+        width: Math.max(0, process.stdout.columns - 25),
+        total: size
+      });
+      stream.on(&apos;open&apos;, () =&gt; process.stderr.write(&apos;\n&apos;));
+      stream.on(&apos;data&apos;, (chunk) =&gt; {
+        progressBar.tick(chunk.length);
+      });
+      stream.on(&apos;end&apos;, () =&gt; process.stderr.write(&apos;\n&apos;));
+    }
+
+    const resultRes = await this._request({
+      method: &apos;POST&apos;,
+      url: sendUrl,
+      headers: {
+        &apos;Content-Type&apos;: &apos;application/octet-stream&apos;,
+        &apos;X-HTTP-Method-Override&apos;: &apos;PUT&apos;
+      },
+      body: stream
+    });
+
+    const result = JSON.parse(resultRes.body);
+    if (result.sessionStatus.state !== &apos;FINALIZED&apos;) {
+      this._logger.error(`Upload Error: ${ result.sessionStatus.state }`);
+      return Promise.reject(new Error(`Upload Error: ${ result.sessionStatus.state }`));
+    }
+
+    this._logger.info(&apos;Uploaded successfully!&apos;);
+
+    const uploadInfo =
+      result.sessionStatus
+        .additionalInfo[&apos;uploader_service.GoogleRupioAdditionalInfo&apos;]
+        .completionInfo
+        .customerSpecificInfo;
+
+    const uploadedPhoto = new Photo({
+      id: uploadInfo.photoMediaKey,
+      uploadedAt: new Date(),
+      createdAt: uploadInfo.timestamp * 1000,
+      type: uploadInfo.kind,
+      title: uploadInfo.title,
+      description: uploadInfo.description,
+      rawUrl: uploadInfo.url,
+      uploadInfo: uploadInfo,
+      _gphotos: this._gphotos
+    });
+    return uploadedPhoto;
+  }
+}
+
+export default GPhotos;
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.0.1)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

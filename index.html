@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl">
+  <title data-ice="title">Home | upload-gphotos | ESDoc</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  <script src="script/manual.js"></script>
+<meta name="description" content="Upload to Google Photos"><meta property="twitter:card" content="summary"><meta property="twitter:title" content="upload-gphotos | ESDoc"><meta property="twitter:description" content="Upload to Google Photos"></head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+<a style="position:relative; top:3px;" href="https://github.com/3846masa/upload-gphotos"><img width="20px" src="./image/github.png"></a></header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Album.js~GPhotosAlbum.html">GPhotosAlbum</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Photo.js~GPhotosPhoto.html">GPhotosPhoto</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/index.js~GPhotos.html">GPhotos</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-external">E</span><span data-ice="name"><span><a href="https://github.com/nomiddlename/log4js-node">log4js.Logger</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-external">E</span><span data-ice="name"><span><a href="https://github.com/winstonjs/winston">winston.Logger</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#utils">utils</a><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-read">read</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-requestjsontemplategenerator">requestjsontemplategenerator</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><div data-ice="index" class="github-markdown"><h1 id="upload-gphotos">upload-gphotos</h1><p><a href="https://nodei.co/npm/upload-gphotos/"><img src="https://nodei.co/npm/upload-gphotos.png?compact=true" alt="NPM"></a></p>
+<p><a href="https://www.npmjs.com/package/upload-gphotos"><img src="https://img.shields.io/npm/v/upload-gphotos.svg?style=flat-square" alt="NPM VERSION"></a>
+<a href="https://github.com/3846masa/upload-gphotos/releases"><img src="https://img.shields.io/github/release/3846masa/upload-gphotos.svg?style=flat-square" alt="GITHUB RELEASE"></a>
+<a href="./LICENSE"><img src="https://img.shields.io/github/license/mashape/apistatus.svg?style=flat-square" alt="LICENSE"></a>
+<a href="https://greenkeeper.io/"><img src="https://img.shields.io/badge/Greenkeeper-enabled-brightgreen.svg?style=flat-square" alt="Greenkeeper badge"></a></p>
+<p>Google Photos &#x306B;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x30A2;&#x30C3;&#x30D7;&#x30ED;&#x30FC;&#x30C9;&#xFF0E;</p>
+<p>Upload photo to Google Photos (Unofficial).</p>
+<h2 id="preparation">Preparation</h2><p><strong>USE AT YOUR OWN RISK</strong></p>
+<ol>
+<li>Turn on &quot;Allowing less secure apps to access your account&quot;<ul>
+<li><a href="https://support.google.com/accounts/answer/6010255">https://support.google.com/accounts/answer/6010255</a></li>
+</ul>
+</li>
+<li>Setup Google+ account</li>
+</ol>
+<h2 id="installation">Installation</h2><h3 id="npm--recommended-">npm (Recommended)</h3><pre><code><code class="source-code prettyprint">$ npm install -g upload-gphotos</code>
+</code></pre><h3 id="executable-file">Executable file</h3><p>Download your platform&apos;s binary via <a href="https://github.com/3846masa/upload-gphotos/releases">GitHub Releases</a>.</p>
+<h2 id="usage">Usage</h2><pre><code><code class="source-code prettyprint">$ upload-gphotos -u USERNAME -p PASSWORD file [...]</code>
+</code></pre><h2 id="library">Library</h2><p>This is also node.js library.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(async () =&gt; {
+const gphotos = new GPhotos({ username: &apos;&apos;, password: &apos;&apos; });
+await gphotos.login();
+
+const photo = await gphotos.upload(filePath);
+const album = await gphotos.searchOrCreateAlbum(&apos;TestAlbum&apos;);
+await album.addPhoto(photo);
+})();</code>
+</code></pre>
+<p>See <a href="https://doc.esdoc.org/github.com/3846masa/upload-gphotos">Documentation</a>.</p>
+</div>
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.0.1)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

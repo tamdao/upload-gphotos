@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../">
+  <title data-ice="title">src/Album.js | upload-gphotos | ESDoc</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  <script src="script/manual.js"></script>
+<meta name="description" content="Upload to Google Photos"><meta property="twitter:card" content="summary"><meta property="twitter:title" content="upload-gphotos | ESDoc"><meta property="twitter:description" content="Upload to Google Photos"></head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+<a style="position:relative; top:3px;" href="https://github.com/3846masa/upload-gphotos"><img width="20px" src="./image/github.png"></a></header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Album.js~GPhotosAlbum.html">GPhotosAlbum</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Photo.js~GPhotosPhoto.html">GPhotosPhoto</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/index.js~GPhotos.html">GPhotos</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-external">E</span><span data-ice="name"><span><a href="https://github.com/nomiddlename/log4js-node">log4js.Logger</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-external">E</span><span data-ice="name"><span><a href="https://github.com/winstonjs/winston">winston.Logger</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#utils">utils</a><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-read">read</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-requestjsontemplategenerator">requestjsontemplategenerator</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/Album.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">import Photo from &apos;./Photo&apos;;
+
+class GPhotosAlbum {
+  /**
+   * @ignore
+   */
+  constructor ({
+    id, title, period = { from: new Date(0), to: new Date(0) },
+    items_count = 0, _gphotos
+  }) {
+    /** @type {String} */
+    this.id = id;
+    /** @type {String} */
+    this.title = title;
+    /**
+     * @type {Object}
+     * @property {Date} from
+     * @property {Date} to
+     */
+    this.period = period;
+    /** @type {number} */
+    this.items_count = items_count;
+    /** @type {String} */
+    this.type = &apos;album&apos;;
+
+    Object.defineProperties(this, {
+      &apos;_gphotos&apos;: {
+        value: _gphotos
+      },
+      &apos;_logger&apos;: {
+        value: _gphotos._logger
+      }
+    });
+  }
+
+  /**
+   * @param {GPhotosPhoto} photo
+   * @return {Promise&lt;String,Error&gt;}
+   */
+  async addPhoto (photo) {
+    const [ insertedPhotoId ] = await this.addPhotos([ photo ]);
+    return insertedPhotoId;
+  }
+
+  /**
+   * @param {GPhotosPhoto[]} photos
+   * @return {Promise&lt;String[],Error&gt;}
+   */
+  async addPhotos (photos) {
+    const query = [ photos.map((p) =&gt; p.id), this.id ];
+
+    const results =
+      await this._gphotos._sendMutateQuery(79956622, query)
+        .catch(() =&gt; {
+          // Fallback: If album is shared, use 99484733.
+          const query = [
+            [ this.id ],
+            [ 2, null, [[ photos.map((p) =&gt; p.id) ]], null, null, [], [] ]
+          ];
+          return this._gphotos._sendMutateQuery(99484733, query);
+        })
+        .catch((_err) =&gt; {
+          this._logger.error(`Failed to add photo in album. ${_err.message}`);
+          return Promise.reject(_err);
+        });
+
+    const insertedPhotoIds = results[1] || [];
+    return insertedPhotoIds;
+  }
+
+  /**
+   * @param  {?String} [next=null]
+   * @return {Promise&lt;Object,Error&gt;}
+   * @property {GPhotosPhoto[]} list
+   * @property {String|undefined} next
+   */
+  async fetchPhotoList (next = null) {
+    const query = [ this.id, (next || null), null, null, 0 ];
+    const results =
+      await this._gphotos._sendDataQuery(71837398, query)
+        .catch((_err) =&gt; {
+          this._logger.error(`Failed to fetch photos. ${_err.message}`);
+          return Promise.reject(_err);
+        });
+
+    const photoList = results[1].map((info) =&gt; {
+      const data = Object.assign(Photo.parseInfo(info), { _gphotos: this._gphotos });
+      return new Photo(data);
+    });
+
+    return { list: photoList, next: results[2] || null };
+  }
+
+  /**
+   * @return {Promise&lt;GPhotosPhoto[],Error&gt;}
+   */
+  async fetchAllPhotoList () {
+    const photoList = [];
+
+    let cursor = null;
+    do {
+      const { list, next: nextCursor } = await this.fetchPhotoList(cursor);
+      photoList.push(...list);
+      cursor = nextCursor;
+    } while (cursor);
+
+    return photoList;
+  }
+
+  /**
+   * @return {Promise&lt;boolean,Error&gt;}
+   */
+  async remove () {
+    const query = [[ this.id ], []];
+
+    await this._gphotos._sendMutateQuery(85534195, query, true)
+      .catch((_err) =&gt; {
+        this._logger.error(`Failed to remove album. ${_err.message}`);
+        return Promise.reject(_err);
+      });
+
+    return true;
+  }
+}
+
+export default GPhotosAlbum;
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.0.1)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>
