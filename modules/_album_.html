@@ -3,17 +3,17 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>upload-gphotos</title>
+	<title>&quot;Album&quot; | upload-gphotos</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="assets/css/main.css">
+	<link rel="stylesheet" href="../assets/css/main.css">
 </head>
 <body>
 <header>
 	<div class="tsd-page-toolbar">
 		<div class="container">
 			<div class="table-wrap">
-				<div class="table-cell" id="tsd-search" data-index="assets/js/search.js" data-base=".">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.js" data-base="..">
 					<div class="field">
 						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
 						<input id="tsd-search-field" type="text" />
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="index.html" class="title">upload-gphotos</a>
+					<a href="../index.html" class="title">upload-gphotos</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -53,82 +53,64 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="globals.html">Globals</a>
+					<a href="../globals.html">Globals</a>
+				</li>
+				<li>
+					<a href="_album_.html">&quot;Album&quot;</a>
 				</li>
 			</ul>
-			<h1> upload-gphotos</h1>
+			<h1>External module &quot;Album&quot;</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
-			<div class="tsd-panel tsd-typography">
-				<h1 id="upload-gphotos">upload-gphotos</h1>
-				<p><a href="https://nodei.co/npm/upload-gphotos/"><img src="https://nodei.co/npm/upload-gphotos.png?compact=true" alt="NPM"></a></p>
-				<p><a href="https://www.npmjs.com/package/upload-gphotos"><img src="https://img.shields.io/npm/v/upload-gphotos.svg?style=flat-square" alt="NPM VERSION"></a>
-					<a href="https://github.com/3846masa/upload-gphotos/releases"><img src="https://img.shields.io/github/release/3846masa/upload-gphotos.svg?style=flat-square" alt="GITHUB RELEASE"></a>
-					<a href="./LICENSE"><img src="https://img.shields.io/github/license/mashape/apistatus.svg?style=flat-square" alt="LICENSE"></a>
-				<a href="https://greenkeeper.io/"><img src="https://img.shields.io/badge/Greenkeeper-enabled-brightgreen.svg?style=flat-square" alt="Greenkeeper badge"></a></p>
-				<p>Google Photos にファイルをアップロード．</p>
-				<p>Upload photo to Google Photos (Unofficial).</p>
-				<h2 id="preparation">Preparation</h2>
-				<p><strong>USE AT YOUR OWN RISK</strong></p>
-				<ol>
-					<li>Turn on &quot;Allowing less secure apps to access your account&quot;<ul>
-							<li><a href="https://support.google.com/accounts/answer/6010255">https://support.google.com/accounts/answer/6010255</a></li>
-						</ul>
-					</li>
-				</ol>
-				<h2 id="installation">Installation</h2>
-				<h3 id="npm-recommended-">npm (Recommended)</h3>
-				<pre><code><span class="hljs-meta">$</span><span class="bash"> npm install -g upload-gphotos</span>
-</code></pre><h3 id="executable-file">Executable file</h3>
-				<p>Download your platform&#39;s binary via <a href="https://github.com/3846masa/upload-gphotos/releases">GitHub Releases</a>.</p>
-				<h2 id="usage">Usage</h2>
-				<pre><code><span class="hljs-symbol">$</span> upload-gphotos <span class="hljs-keyword">file</span> [...] -u USERNAME -p PASSWORD
-</code></pre><h2 id="library">Library</h2>
-				<p>This is also Node.js library.</p>
-				<pre><code class="lang-js">(<span class="hljs-keyword">async</span> () =&gt; {
-  <span class="hljs-keyword">const</span> gphotos = <span class="hljs-keyword">new</span> GPhotos({ <span class="hljs-attr">username</span>: <span class="hljs-string">''</span>, <span class="hljs-attr">password</span>: <span class="hljs-string">''</span> });
-  <span class="hljs-keyword">await</span> gphotos.login();
-
-  <span class="hljs-keyword">const</span> photo = <span class="hljs-keyword">await</span> gphotos.upload(filePath);
-  <span class="hljs-keyword">const</span> album = <span class="hljs-keyword">await</span> gphotos.searchOrCreateAlbum(<span class="hljs-string">'TestAlbum'</span>);
-  <span class="hljs-keyword">await</span> album.addPhoto(photo);
-})();
-</code></pre>
-				<p>See <a href="https://3846masa.github.io/upload-gphotos/modules/_index_.html">Documentation</a>.</p>
-			</div>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Classes</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-class tsd-parent-kind-external-module"><a href="../classes/_album_.gphotosalbum.html" class="tsd-kind-icon">GPhotos<wbr>Album</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
 					<li class="globals  ">
-						<a href="globals.html"><em>Globals</em></a>
+						<a href="../globals.html"><em>Globals</em></a>
+					</li>
+					<li class="current tsd-kind-external-module">
+						<a href="_album_.html">"<wbr>Album"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_album_.html">"<wbr>Album"</a>
+						<a href="_photo_.html">"<wbr>Photo"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_photo_.html">"<wbr>Photo"</a>
+						<a href="_cli_.html">"cli"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_cli_.html">"cli"</a>
+						<a href="_index_.html">"index"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_index_.html">"index"</a>
+						<a href="_util_uploadinfotemplate_.html">"util/upload<wbr>Info<wbr>Template"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_util_uploadinfotemplate_.html">"util/upload<wbr>Info<wbr>Template"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="modules/_util_wait_.html">"util/wait"</a>
+						<a href="_util_wait_.html">"util/wait"</a>
 					</li>
 				</ul>
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
+					<li class=" tsd-kind-class tsd-parent-kind-external-module">
+						<a href="../classes/_album_.gphotosalbum.html" class="tsd-kind-icon">GPhotos<wbr>Album</a>
+					</li>
 				</ul>
 			</nav>
 		</div>
@@ -197,7 +179,7 @@
 	<p>Generated using <a href="http://typedoc.org/" target="_blank">TypeDoc</a></p>
 </div>
 <div class="overlay"></div>
-<script src="assets/js/main.js"></script>
-<script>if (location.protocol == 'file:') document.write('<script src="assets/js/search.js"><' + '/script>');</script>
+<script src="../assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="../assets/js/search.js"><' + '/script>');</script>
 </body>
 </html>

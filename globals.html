@@ -63,48 +63,29 @@
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
-			<div class="tsd-panel tsd-typography">
-				<h1 id="upload-gphotos">upload-gphotos</h1>
-				<p><a href="https://nodei.co/npm/upload-gphotos/"><img src="https://nodei.co/npm/upload-gphotos.png?compact=true" alt="NPM"></a></p>
-				<p><a href="https://www.npmjs.com/package/upload-gphotos"><img src="https://img.shields.io/npm/v/upload-gphotos.svg?style=flat-square" alt="NPM VERSION"></a>
-					<a href="https://github.com/3846masa/upload-gphotos/releases"><img src="https://img.shields.io/github/release/3846masa/upload-gphotos.svg?style=flat-square" alt="GITHUB RELEASE"></a>
-					<a href="./LICENSE"><img src="https://img.shields.io/github/license/mashape/apistatus.svg?style=flat-square" alt="LICENSE"></a>
-				<a href="https://greenkeeper.io/"><img src="https://img.shields.io/badge/Greenkeeper-enabled-brightgreen.svg?style=flat-square" alt="Greenkeeper badge"></a></p>
-				<p>Google Photos にファイルをアップロード．</p>
-				<p>Upload photo to Google Photos (Unofficial).</p>
-				<h2 id="preparation">Preparation</h2>
-				<p><strong>USE AT YOUR OWN RISK</strong></p>
-				<ol>
-					<li>Turn on &quot;Allowing less secure apps to access your account&quot;<ul>
-							<li><a href="https://support.google.com/accounts/answer/6010255">https://support.google.com/accounts/answer/6010255</a></li>
-						</ul>
-					</li>
-				</ol>
-				<h2 id="installation">Installation</h2>
-				<h3 id="npm-recommended-">npm (Recommended)</h3>
-				<pre><code><span class="hljs-meta">$</span><span class="bash"> npm install -g upload-gphotos</span>
-</code></pre><h3 id="executable-file">Executable file</h3>
-				<p>Download your platform&#39;s binary via <a href="https://github.com/3846masa/upload-gphotos/releases">GitHub Releases</a>.</p>
-				<h2 id="usage">Usage</h2>
-				<pre><code><span class="hljs-symbol">$</span> upload-gphotos <span class="hljs-keyword">file</span> [...] -u USERNAME -p PASSWORD
-</code></pre><h2 id="library">Library</h2>
-				<p>This is also Node.js library.</p>
-				<pre><code class="lang-js">(<span class="hljs-keyword">async</span> () =&gt; {
-  <span class="hljs-keyword">const</span> gphotos = <span class="hljs-keyword">new</span> GPhotos({ <span class="hljs-attr">username</span>: <span class="hljs-string">''</span>, <span class="hljs-attr">password</span>: <span class="hljs-string">''</span> });
-  <span class="hljs-keyword">await</span> gphotos.login();
-
-  <span class="hljs-keyword">const</span> photo = <span class="hljs-keyword">await</span> gphotos.upload(filePath);
-  <span class="hljs-keyword">const</span> album = <span class="hljs-keyword">await</span> gphotos.searchOrCreateAlbum(<span class="hljs-string">'TestAlbum'</span>);
-  <span class="hljs-keyword">await</span> album.addPhoto(photo);
-})();
-</code></pre>
-				<p>See <a href="https://3846masa.github.io/upload-gphotos/modules/_index_.html">Documentation</a>.</p>
-			</div>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>External modules</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-external-module"><a href="modules/_album_.html" class="tsd-kind-icon">"<wbr>Album"</a></li>
+								<li class="tsd-kind-external-module"><a href="modules/_photo_.html" class="tsd-kind-icon">"<wbr>Photo"</a></li>
+								<li class="tsd-kind-external-module"><a href="modules/_cli_.html" class="tsd-kind-icon">"cli"</a></li>
+								<li class="tsd-kind-external-module"><a href="modules/_index_.html" class="tsd-kind-icon">"index"</a></li>
+								<li class="tsd-kind-external-module"><a href="modules/_util_uploadinfotemplate_.html" class="tsd-kind-icon">"util/upload<wbr>Info<wbr>Template"</a></li>
+								<li class="tsd-kind-external-module"><a href="modules/_util_wait_.html" class="tsd-kind-icon">"util/wait"</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
-					<li class="globals  ">
+					<li class="globals current ">
 						<a href="globals.html"><em>Globals</em></a>
 					</li>
 					<li class=" tsd-kind-external-module">
