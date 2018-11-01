@@ -58,7 +58,7 @@
     "@types/node": "^10.0.3",
     "@types/progress": "^2.0.0",
     "@types/static-eval": "^0.2.30",
-    "@types/tough-cookie": "^2.3.2",
+    "@types/tough-cookie": "^2.3.4",
     "@types/yargs": "^11.0.0",
     "gh-pages": "^1.0.0",
     "npm-run-all": "^4.1.2",
